@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
         // 1. Image Generation (using gemini-2.5-flash)
         if (task === 'image') {
             // Use the specific model for images if requested, or default
-            const imageModel = 'gemini-2.5-flash';
+            const imageModel = 'gemini-2.5-flash-image';
+
 
             const response = await ai.models.generateContent({
                 model: imageModel,
