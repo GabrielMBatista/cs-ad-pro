@@ -82,7 +82,8 @@ export const OverlaySystem: React.FC<OverlaySystemProps> = ({
             newOverlays = [
                 { id: `t-${baseId}-1`, text: question, x: 50, y: 68, fontSize: 30, color: '#ffffff', fontFamily: 'Oswald', fontWeight: '900', textAlign: 'center' },
                 { id: `t-${baseId}-2`, text: engSub, x: 50, y: 82, fontSize: 13, color: '#cbd5e1', fontFamily: 'Inter', fontWeight: '400', textAlign: 'center' },
-                { id: `t-${baseId}-brand`, text: 'GMAX SKINS', x: 50, y: 93, fontSize: 11, color: '#8b5cf6', fontFamily: 'Oswald', fontWeight: '700', textAlign: 'center' }
+                { id: `t-${baseId}-brand`, text: 'CS AD-PRO', x: 50, y: 93, fontSize: 11, color: '#8b5cf6', fontFamily: 'Oswald', fontWeight: '700', textAlign: 'center' }
+
             ];
         } else if (template === 'postmatch') {
             newOverlays = [
@@ -97,7 +98,8 @@ export const OverlaySystem: React.FC<OverlaySystemProps> = ({
                 { id: `t-${baseId}-vs`, text: 'VS', x: 50, y: 52, fontSize: 44, color: '#F97316', fontFamily: 'Oswald', fontWeight: '900', textAlign: 'center' },
                 { id: `t-${baseId}-lb`, text: vsLabelB, x: 78, y: 28, fontSize: 22, color: '#ffffff', fontFamily: 'Inter', fontWeight: '900', textAlign: 'center' },
                 { id: `t-${baseId}-db`, text: vsDescB, x: 78, y: 40, fontSize: 14, color: '#FACC15', fontFamily: 'Inter', fontWeight: '700', textAlign: 'center' },
-                { id: `t-${baseId}-brand`, text: 'GMAX SKINS', x: 50, y: 93, fontSize: 14, color: '#8b5cf6', fontFamily: 'Oswald', fontWeight: '700', textAlign: 'center' }
+                { id: `t-${baseId}-brand`, text: 'CS AD-PRO', x: 50, y: 93, fontSize: 14, color: '#8b5cf6', fontFamily: 'Oswald', fontWeight: '700', textAlign: 'center' }
+
             ];
         }
 

@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'CS AD-PRO | GMAX Skins Creator',
+    title: 'CS AD-PRO | Skin Creator',
+
     description: 'AI-powered CS:GO skin advertisement creator',
 };
 

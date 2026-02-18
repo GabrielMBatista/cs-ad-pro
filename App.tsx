@@ -371,7 +371,8 @@ const App: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `gmax-ad-${Date.now()}.png`;
+        a.download = `cs-ad-${Date.now()}.png`;
+
         a.click();
         URL.revokeObjectURL(url);
       }, 'image/png');
