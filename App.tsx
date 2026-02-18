@@ -412,10 +412,31 @@ const App: React.FC = () => {
             ctx.shadowOffsetY = 2;
           }
 
-          const lines = layer.text.split('\n');
+          const MAX_WIDTH = SIZE * 0.8; // Match the 80% maxWidth from CSS
+          const rawLines = layer.text.split('\n');
+          const wrappedLines: string[] = [];
+
+          rawLines.forEach(line => {
+            const words = line.split(' ');
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+              const word = words[i];
+              const width = ctx.measureText(currentLine + " " + word).width;
+              if (width < MAX_WIDTH) {
+                currentLine += " " + word;
+              } else {
+                wrappedLines.push(currentLine);
+                currentLine = word;
+              }
+            }
+            wrappedLines.push(currentLine);
+          });
+
           const lineHeight = scaledFontSize * 1.2;
-          const totalHeight = lines.length * lineHeight;
-          lines.forEach((line, i) => {
+          const totalHeight = wrappedLines.length * lineHeight;
+
+          wrappedLines.forEach((line, i) => {
             ctx.fillText(line, 0, (i * lineHeight) - (totalHeight / 2) + lineHeight / 2);
           });
         }

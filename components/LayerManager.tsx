@@ -62,6 +62,44 @@ const LayerManager: React.FC<LayerManagerProps> = ({
     // We want to display highest z-index at the top of the list
     const displayLayers = [...layers].sort((a, b) => b.zIndex - a.zIndex);
 
+    // Simple drag and drop
+    const [draggedLayerId, setDraggedLayerId] = useState<string | null>(null);
+
+    const handleDragStart = (e: React.DragEvent, id: string) => {
+        setDraggedLayerId(id);
+        e.dataTransfer.effectAllowed = 'move';
+        // Transparent drag image
+        const img = new Image();
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        e.dataTransfer.setDragImage(img, 0, 0);
+    };
+
+    const handleDragOver = (e: React.DragEvent, targetId: string) => {
+        e.preventDefault();
+        if (!draggedLayerId || draggedLayerId === targetId) return;
+
+        const sourceIndex = layers.findIndex(l => l.id === draggedLayerId);
+        const targetIndex = layers.findIndex(l => l.id === targetId);
+
+        if (sourceIndex === -1 || targetIndex === -1) return;
+
+        // Create new array copy
+        const newLayers = [...layers];
+        // Remove source
+        const [movedLayer] = newLayers.splice(sourceIndex, 1);
+        // Insert at target
+        newLayers.splice(targetIndex, 0, movedLayer);
+
+        // Reassign z-indexes based on new array order (0 to N)
+        newLayers.forEach((l, i) => l.zIndex = i);
+
+        onReorderLayers(newLayers);
+    };
+
+    const handleDragEnd = () => {
+        setDraggedLayerId(null);
+    };
+
     return (
         <div className="flex flex-col gap-4">
             {/* Actions */}
@@ -117,12 +155,17 @@ const LayerManager: React.FC<LayerManagerProps> = ({
                 {displayLayers.map((layer) => (
                     <div
                         key={layer.id}
-                        className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-pointer group
-              ${selectedId === layer.id ? 'bg-orange-900/10 border-orange-500/50' : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, layer.id)}
+                        onDragOver={(e) => handleDragOver(e, layer.id)}
+                        onDragEnd={handleDragEnd}
+                        className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-grab active:cursor-grabbing group
+              ${selectedId === layer.id ? 'bg-orange-900/10 border-orange-500/50' : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'}
+              ${draggedLayerId === layer.id ? 'opacity-50' : ''}`}
                         onClick={() => onSelect(layer.id)}
                     >
-                        {/* Type Icon */}
-                        <div className="w-6 h-6 rounded bg-zinc-900 flex items-center justify-center text-xs shrink-0 text-zinc-500 font-mono">
+                        {/* Drag Handle / Type Icon */}
+                        <div className="w-6 h-6 rounded bg-zinc-900 flex items-center justify-center text-xs shrink-0 text-zinc-500 font-mono cursor-grab active:cursor-grabbing hover:bg-zinc-800 hover:text-zinc-300 transition-colors">
                             {layer.type === 'text' ? 'T' : 'IMG'}
                         </div>
 
@@ -144,18 +187,6 @@ const LayerManager: React.FC<LayerManagerProps> = ({
                             >
                                 {layer.visible ? '👁️' : '🚫'}
                             </button>
-
-                            {/* Move Up/Down (Remember displayLayers is reversed) */}
-                            <div className="flex flex-col gap-0.5">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); moveLayer(layer.zIndex, 'up'); }}
-                                    className="h-2.5 w-4 bg-zinc-800 hover:bg-orange-600 rounded-sm flex items-center justify-center text-[6px]"
-                                >▲</button>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); moveLayer(layer.zIndex, 'down'); }}
-                                    className="h-2.5 w-4 bg-zinc-800 hover:bg-orange-600 rounded-sm flex items-center justify-center text-[6px]"
-                                >▼</button>
-                            </div>
 
                             {/* Delete */}
                             <button
