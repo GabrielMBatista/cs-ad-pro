@@ -10,25 +10,37 @@ export interface ColorStyle {
   colors: string[];
 }
 
-export interface TextOverlay {
+export type LayerType = 'text' | 'image' | 'sticker';
+
+export interface Layer {
   id: string;
-  text: string;
-  fontSize: number;
-  color: string;
+  type: LayerType;
+  visible: boolean;
+  locked: boolean;
+
+  // Transform
   x: number;
   y: number;
-  fontFamily: string;
-  fontWeight: string;
-  textAlign: 'left' | 'center' | 'right';
-  rotation?: number;
+  rotation: number;
+  scale: number;
+  zIndex: number;
+  opacity: number;
+
+  // Content specific
+  text?: string;
+  src?: string; // For images/stickers
+
+  // Style
+  style?: {
+    fontFamily?: string;
+    fontWeight?: string;
+    fontSize?: number;
+    color?: string;
+    textAlign?: 'left' | 'center' | 'right';
+    shadow?: boolean;
+  };
 }
 
-export interface WeaponTransform {
-  x: number;
-  y: number;
-  scale: number;
-  rotation: number;
-}
 
 /**
  * CS:GO API Data Structures
@@ -51,10 +63,10 @@ export interface CSGOSkin {
 
 export interface Campaign {
   id: string;
-  createdAt: number;
+  createdAt: number; // Stored as BigInt in DB, converted to number in API
   skin?: CSGOSkin;
   prompt: string;
   imageUrl: string;
-  overlays: TextOverlay[];
+  layers: Layer[]; // New unified structure
   status: 'draft' | 'final';
 }

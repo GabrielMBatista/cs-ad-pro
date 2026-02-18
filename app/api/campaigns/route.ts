@@ -31,8 +31,16 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const campaign = await prisma.campaign.create({
-            data: {
+        const campaign = await prisma.campaign.upsert({
+            where: { id: body.id },
+            update: {
+                prompt: body.prompt,
+                imageUrl: body.imageUrl,
+                overlays: JSON.stringify(body.overlays ?? []),
+                skinJson: body.skin ? JSON.stringify(body.skin) : null,
+                status: body.status ?? 'draft',
+            },
+            create: {
                 id: body.id,
                 createdAt: BigInt(body.createdAt),
                 prompt: body.prompt,
@@ -42,7 +50,8 @@ export async function POST(request: Request) {
                 status: body.status ?? 'draft',
             },
         });
-        return NextResponse.json({ id: campaign.id }, { status: 201 });
+        return NextResponse.json({ id: campaign.id }, { status: 200 });
+
     } catch (error) {
         console.error('POST /api/campaigns error:', error);
         return NextResponse.json({ error: 'Failed to save campaign' }, { status: 500 });
