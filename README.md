@@ -1,20 +1,71 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# CS AD-PRO
 
-# Run and deploy your AI Studio app
+**AI-powered CS:GO/CS2 skin advertisement creator.**
+Create professional social media assets for skin sales in seconds using Generative AI.
 
-This contains everything you need to run your app locally.
+![Project Banner](https://placehold.co/1200x400/09090b/ea580c?text=CS+AD-PRO)
 
-View your app in AI Studio: https://ai.studio/apps/drive/17IZkTfm0XVVb0rI32sLL4fiTpj8iL4Ru
+## 🚀 Stack
 
-## Run Locally
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Database**: [Prisma](https://www.prisma.io/) (SQLite for Dev, PostgreSQL for Prod)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **AI**: [Google Gemini 2.0 Flash](https://ai.google.dev/) (Text & Image Generation)
+- **Deployment**: Vercel
 
-**Prerequisites:**  Node.js
+## ✨ Features
 
+- **Skin Catalog**: Quick search for any CS:GO/CS2 skin.
+- **Auto-Prompt Engine**: Analyzes skin properties to generate high-converting ad copy.
+- **Visual Generator**: Creates stunning backgrounds and compositions using Gemini AI.
+- **Style Templates**:
+  - 🎯 **Minimal**: Clean focus on the skin.
+  - 💰 **Retail**: Price and float highlights.
+  - 🏆 **Esports**: Official drop style.
+  - 💬 **Engagement**: "Would you own this?" polls.
+  - ❓ **Post-Match**: "How was the match?" engagement.
+  - ⚔️ **VS Float**: Before/After comparison.
+- **History Persistence**: All campaigns are saved automatically to the database.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Setup Locally
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/GabrielMBatista/cs-ad-pro.git
+   cd cs-ad-pro
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Rename `.env.example` to `.env.local` and add your keys:
+   ```env
+   NEXT_PUBLIC_API_KEY=your_gemini_api_key
+   DATABASE_URL="file:./dev.db"
+   ```
+
+4. **Setup Database:**
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+5. **Run Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Access at `http://localhost:3000`.
+
+## 📦 Deployment (Vercel)
+
+1. Import this repository on [Vercel](https://vercel.com/).
+2. Add Environment Variables:
+   - `NEXT_PUBLIC_API_KEY`
+   - `DATABASE_URL` (Use a PostgreSQL provider like [Neon](https://neon.tech/))
+3. **Important**: Change `provider` in `prisma/schema.prisma` from `"sqlite"` to `"postgresql"` before deploying if using Neon/Vercel Postgres.
+
+## 📄 License
+
+MIT
