@@ -1,11 +1,16 @@
 import { Campaign } from '../types';
 
 export const saveCampaign = async (campaign: Campaign): Promise<void> => {
-    await fetch('/api/campaigns', {
+    const res = await fetch('/api/campaigns', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(campaign),
     });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to save campaign');
+    }
+
 };
 
 export const getCampaigns = async (): Promise<Campaign[]> => {

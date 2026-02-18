@@ -298,12 +298,11 @@ const App: React.FC = () => {
 
     // We need to ensure layers are compatible. 
     // If loading old campaign with 'overlays', convert them?
-    // Doing a check here:
     if ((campaign as any).overlays && (!campaign.layers || campaign.layers.length === 0)) {
       // Convert legacy
-      const legacyOverlays = (campaign as any).overlays as import('./types').TextOverlay[];
+      const legacyOverlays = (campaign as any).overlays as any[]; // Cast to any to avoid missing type import
       const convertedLayers: Layer[] = legacyOverlays.map((o, i) => ({
-        id: o.id,
+        id: o.id || `legacy-${i}`,
         type: 'text',
         text: o.text,
         x: o.x, y: o.y,
