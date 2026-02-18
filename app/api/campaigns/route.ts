@@ -31,21 +31,28 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
+
+        if (!body.id) {
+            return NextResponse.json({ error: 'Missing Campaign ID' }, { status: 400 });
+        }
+
+        const layersToSave = body.layers ?? body.overlays ?? [];
+
         const campaign = await prisma.campaign.upsert({
             where: { id: body.id },
             update: {
                 prompt: body.prompt,
                 imageUrl: body.imageUrl,
-                overlays: JSON.stringify(body.overlays ?? []),
+                overlays: JSON.stringify(layersToSave),
                 skinJson: body.skin ? JSON.stringify(body.skin) : null,
                 status: body.status ?? 'draft',
             },
             create: {
                 id: body.id,
-                createdAt: BigInt(body.createdAt),
+                createdAt: body.createdAt ? BigInt(body.createdAt) : BigInt(Date.now()),
                 prompt: body.prompt,
                 imageUrl: body.imageUrl,
-                overlays: JSON.stringify(body.overlays ?? []),
+                overlays: JSON.stringify(layersToSave),
                 skinJson: body.skin ? JSON.stringify(body.skin) : null,
                 status: body.status ?? 'draft',
             },

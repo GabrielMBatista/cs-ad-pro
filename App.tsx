@@ -38,6 +38,7 @@ const App: React.FC = () => {
   const [leftTab, setLeftTab] = useState<'setup' | 'templates'>('setup');
   const [rightPanelTab, setRightPanelTab] = useState<'layers' | 'refine' | 'analyze' | 'history'>('layers');
   const [showCatalog, setShowCatalog] = useState(false);
+  const [catalogMode, setCatalogMode] = useState<'setup' | 'layer'>('setup');
 
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [useThinking, setUseThinking] = useState(false);

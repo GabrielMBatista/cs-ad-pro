@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Layer } from '../types';
 
 interface LayerManagerProps {
@@ -10,6 +10,7 @@ interface LayerManagerProps {
     onReorderLayers: (newOrder: Layer[]) => void;
     onDeleteLayer: (id: string) => void;
     onAddLayer: (type: 'text' | 'image' | 'sticker', src?: string) => void;
+    onRequestCatalog?: () => void;
 }
 
 const LayerManager: React.FC<LayerManagerProps> = ({
@@ -19,9 +20,11 @@ const LayerManager: React.FC<LayerManagerProps> = ({
     onUpdateLayer,
     onReorderLayers,
     onDeleteLayer,
-    onAddLayer
+    onAddLayer,
+    onRequestCatalog
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [showImageMenu, setShowImageMenu] = useState(false);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -60,29 +63,50 @@ const LayerManager: React.FC<LayerManagerProps> = ({
     const displayLayers = [...layers].sort((a, b) => b.zIndex - a.zIndex);
 
     return (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
             {/* Actions */}
             <div className="grid grid-cols-2 gap-2">
                 <button
                     onClick={() => onAddLayer('text')}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-colors"
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                 >
                     <span>T</span> Add Text
                 </button>
-                <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-colors"
-                >
-                    <span>🖼️</span> Add Image
-                </button>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    accept="image/*"
-                    className="hidden"
-                />
+                <div className="relative">
+                    <button
+                        onClick={() => setShowImageMenu(!showImageMenu)}
+                        className="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                    >
+                        <span>🖼</span> Add Image
+                    </button>
+
+                    {showImageMenu && (
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="px-4 py-3 text-left text-[10px] font-bold uppercase hover:bg-zinc-800 text-zinc-300 hover:text-white border-b border-zinc-800"
+                            >
+                                📤 Upload File
+                            </button>
+                            {onRequestCatalog && (
+                                <button
+                                    onClick={() => { onRequestCatalog(); setShowImageMenu(false); }}
+                                    className="px-4 py-3 text-left text-[10px] font-bold uppercase hover:bg-zinc-800 text-zinc-300 hover:text-white"
+                                >
+                                    🔍 From Catalog (API)
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileUpload}
+            />
 
             {/* Layer List */}
             <div className="space-y-1 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
