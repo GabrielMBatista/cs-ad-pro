@@ -383,13 +383,16 @@ const App: React.FC = () => {
 
         if ((layer.type === 'image' || layer.type === 'sticker') && layer.src) {
           const img = await loadImage(layer.src);
-          // Draw centered
-          // Assume 100% scale = 500px width reference? Or native size
-          // Let's us a standard reference size of 300px for consistency with visual scale
-          const refSize = 300;
-          // Maintain aspect
+
+          // Match the UI logic: 
+          // UI Base Width = 600px.
+          // UI Image Max Width = 300px (which is 50% of base).
+          // Therefore, Export Base Width should be SIZE * 0.5.
+          const baseWidth = SIZE * 0.5;
+
+          // Maintain aspect ratio
           const aspect = img.width / img.height;
-          const dw = refSize;
+          const dw = baseWidth;
           const dh = dw / aspect;
 
           // Shadow
@@ -582,13 +585,35 @@ const App: React.FC = () => {
           <div className="col-span-6 flex flex-col gap-4 h-full relative">
             <div className="flex-1 bg-zinc-900/30 rounded-3xl border border-zinc-800 flex items-center justify-center p-8 backdrop-blur-sm relative overflow-hidden group">
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-              <CanvasOverlay
-                image={backgroundImage}
-                layers={layers}
-                selectedId={selectedLayerId}
-                onSelect={setSelectedLayerId}
-                onUpdateLayer={updateLayer}
-              />
+
+              {/* Responsive Container for Fixed Resolution Preview */}
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div style={{
+                  width: '600px',
+                  height: '600px',
+                  transform: 'scale(var(--scale-factor, 1))',
+                  transformOrigin: 'center center'
+                }}
+                  ref={(el) => {
+                    if (!el || !el.parentElement) return;
+                    const resizeObserver = new ResizeObserver(() => {
+                      const parent = el.parentElement!;
+                      const scale = Math.min(parent.clientWidth / 650, parent.clientHeight / 650);
+                      el.style.setProperty('--scale-factor', scale.toString());
+                    });
+                    resizeObserver.observe(el.parentElement);
+                  }}
+                  className="shadow-2xl shadow-black"
+                >
+                  <CanvasOverlay
+                    image={backgroundImage}
+                    layers={layers}
+                    selectedId={selectedLayerId}
+                    onSelect={setSelectedLayerId}
+                    onUpdateLayer={updateLayer}
+                  />
+                </div>
+              </div>
             </div>
             {backgroundImage && (
               <div className="absolute bottom-6 right-6 flex gap-2">

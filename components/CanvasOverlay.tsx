@@ -23,6 +23,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
 
   const handleMouseDown = (e: React.MouseEvent, id: string, initialX: number, initialY: number) => {
     e.stopPropagation();
+    e.preventDefault(); // Prevent native drag or selection
     onSelect(id);
 
     if (containerRef.current) {
