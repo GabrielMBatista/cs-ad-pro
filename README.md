@@ -43,9 +43,10 @@ Create professional social media assets for skin sales in seconds using Generati
 3. **Configure Environment Variables:**
    Rename `.env.example` to `.env.local` and add your keys:
    ```env
-   NEXT_PUBLIC_API_KEY=your_gemini_api_key
+   GEMINI_API_KEY=your_gemini_api_key
    DATABASE_URL="file:./dev.db"
    ```
+
 
 4. **Setup Database:**
    ```bash
@@ -62,8 +63,9 @@ Create professional social media assets for skin sales in seconds using Generati
 
 1. Import this repository on [Vercel](https://vercel.com/).
 2. Add Environment Variables:
-   - `NEXT_PUBLIC_API_KEY`
+   - `GEMINI_API_KEY`
    - `DATABASE_URL` (Use a PostgreSQL provider like [Neon](https://neon.tech/))
+
 3. **Important**: Change `provider` in `prisma/schema.prisma` from `"sqlite"` to `"postgresql"` before deploying if using Neon/Vercel Postgres.
 
 ## 📄 License

@@ -1,30 +1,20 @@
 
-import { GoogleGenAI } from "@google/genai";
-import { CSGOSkin, AspectRatio, ImageSize } from "../types";
+import { AspectRatio } from "../types";
 
-declare global {
-  interface Window {
-    aistudio?: {
-      hasSelectedApiKey: () => Promise<boolean>;
-      openSelectKey: () => Promise<void>;
-    };
-  }
-}
+// Helper to call our internal API
+async function callInternalApi(payload: any) {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 
-export async function checkAndRequestKey() {
-  if (typeof window.aistudio !== 'undefined' && window.aistudio.hasSelectedApiKey) {
-    const hasKey = await window.aistudio.hasSelectedApiKey();
-    if (!hasKey) {
-      await window.aistudio.openSelectKey();
-    }
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API Error: ${response.status}`);
   }
-}
 
-async function handleApiError(error: any): Promise<never> {
-  if (error?.message?.includes('Requested entity was not found.') && typeof window.aistudio !== 'undefined' && window.aistudio.openSelectKey) {
-    await window.aistudio.openSelectKey();
-  }
-  throw error;
+  return response.json();
 }
 
 /**
@@ -32,17 +22,7 @@ async function handleApiError(error: any): Promise<never> {
  * Acts as a High-End Marketing Director.
  */
 export async function enhancePrompt(simplePrompt: string, gameContext: string, colorStyle: string, useThinking: boolean): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_API_KEY });
-
-  const config: any = {};
-  if (useThinking) {
-    config.thinkingConfig = { thinkingBudget: 24576 };
-  }
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-flash-latest',
-      contents: `Você é um Diretor de Arte de Publicidade de Luxo para Instagram. 
+  const prompt = `Você é um Diretor de Arte de Publicidade de Luxo para Instagram. 
       Otimize este prompt para uma CAMPANHA PUBLICITÁRIA ÉPICA: "${simplePrompt}".
       
       CRÍTICO: O objeto central (arma ou rosto) é SAGRADO e INALTERÁVEL. 
@@ -54,12 +34,24 @@ export async function enhancePrompt(simplePrompt: string, gameContext: string, c
       3. Foque na composição para Instagram (centro de interesse, profundidade).
       4. Contexto: ${gameContext}, Estilo: ${colorStyle}.
       
-      Retorne APENAS o texto final do prompt em inglês para melhor performance da IA de imagem.`,
+      Retorne APENAS o texto final do prompt em inglês para melhor performance da IA de imagem.`;
+
+  try {
+    const config: any = {};
+    if (useThinking) {
+      config.thinkingConfig = { thinkingBudget: 24576 };
+    }
+
+    const data = await callInternalApi({
+      prompt,
+      model: 'gemini-flash-latest',
       config
     });
-    return response.text || simplePrompt;
+
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || simplePrompt;
   } catch (error) {
-    return handleApiError(error);
+    console.error("Enhance Prompt Error:", error);
+    return simplePrompt;
   }
 }
 
@@ -74,9 +66,6 @@ export async function generateImage(
   referenceImageBase64?: string,
   userNegativePrompt?: string
 ): Promise<string> {
-  await checkAndRequestKey();
-  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_API_KEY });
-
 
   const prompt = `ADVERTISEMENT COMPOSITING:
   SCENARIO: ${scenarioPrompt}.
@@ -102,16 +91,40 @@ export async function generateImage(
   parts.push({ text: prompt });
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: { parts },
+    // Send complex parts structure to our API, handled by custom logic in route.ts if needed, 
+    // or we can just send the prompt text if the backend handles the reference image logic.
+    // However, our backend generic route expects 'prompt' as string or parts. 
+    // Let's adjust route.ts to handle 'contents' or simple 'prompt'.
+    // Actually, let's keep it simple: we pass the full 'contents' payload structure expected by Gemini
+    // but wrapped in our API payload.
+
+    // Simplification for this specific function:
+    // We'll update the route.ts to handle 'parts' construction if we pass reference image separate, 
+    // OR we pass the constructed parts from here.
+
+    // Let's pass the configured parts directly to the model via our API
+    // We need to slightly adjust api/generate/route.ts to accept 'contents' directly for maximum flexibility
+    // OR just use the 'prompt' field as the contents array.
+
+    // For now, let's assume route.ts takes 'prompt' as the main content input.
+    // If 'prompt' is an array, GoogleGenAI might handle it, or we need to fix route.ts.
+    // Let's fix route.ts to be more robust first? 
+    // No, let's strictly follow the contract we built: api/generate accepts { prompt, model, config, task }
+
+    // We'll pass the parts array as 'prompt' and handle it in route.ts
+    // (We need to update route.ts to handle array prompts if it doesn't already, 
+    // but GoogleGenAI.generateContent accepts string or Part[])
+
+    const data = await callInternalApi({
+      prompt: parts, // Passing parts array as prompt
+      task: 'image',
       config: {
-        // @ts-ignore
-        responseModalities: ['TEXT', 'IMAGE'],
+        responseModalities: ['IMAGE']
       }
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
+    // Parse response
+    for (const part of data.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData?.data) {
         const mimeType = part.inlineData.mimeType || 'image/png';
         return `data:${mimeType};base64,${part.inlineData.data}`;
@@ -130,28 +143,29 @@ export async function generateImage(
  * Edits images using Gemini 2.5 Flash Image.
  */
 export async function editImage(base64Image: string, prompt: string): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_API_KEY });
-
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [
-          { inlineData: { data: base64Image.split(',')[1], mimeType: 'image/png' } },
-          { text: prompt }
-        ]
-      },
+    const parts = [
+      { inlineData: { data: base64Image.split(',')[1], mimeType: 'image/png' } },
+      { text: prompt }
+    ];
+
+    const data = await callInternalApi({
+      prompt: parts,
+      task: 'image',
       config: {
-        // @ts-ignore
-        responseModalities: ['TEXT', 'IMAGE'],
+        responseModalities: ['IMAGE'] // Force image return
       }
     });
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
+
+    for (const part of data.candidates?.[0]?.content?.parts || []) {
+      if (part.inlineData?.data) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
     }
     throw new Error("Falha na edição: modelo não retornou imagem.");
   } catch (error) {
-    return handleApiError(error);
+    console.error("Edit Image Error:", error);
+    throw error;
   }
 }
 
@@ -159,26 +173,26 @@ export async function editImage(base64Image: string, prompt: string): Promise<st
  * Analyzes images using Gemini Flash with thinking mode.
  */
 export async function analyzeImage(base64Image: string, query: string, useThinking: boolean): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_API_KEY });
-
-  const config: any = {};
-  if (useThinking) {
-    config.thinkingConfig = { thinkingBudget: 24576 };
-  }
-
   try {
-    const response = await ai.models.generateContent({
+    const config: any = {};
+    if (useThinking) {
+      config.thinkingConfig = { thinkingBudget: 24576 };
+    }
+
+    const parts = [
+      { inlineData: { data: base64Image.split(',')[1], mimeType: 'image/png' } },
+      { text: query }
+    ];
+
+    const data = await callInternalApi({
+      prompt: parts,
       model: 'gemini-2.5-flash',
-      contents: {
-        parts: [
-          { inlineData: { data: base64Image.split(',')[1], mimeType: 'image/png' } },
-          { text: query }
-        ]
-      },
       config
     });
-    return response.text || "Sem análise.";
+
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem análise.";
   } catch (error) {
-    return handleApiError(error);
+    console.error("Analyze Image Error:", error);
+    return "Erro na análise.";
   }
 }
