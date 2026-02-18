@@ -500,7 +500,8 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-zinc-900/50 p-5 rounded-2xl border border-zinc-800 space-y-4 shadow-xl relative overflow-hidden flex-1 flex flex-col">
+            <div className="bg-zinc-900/50 p-5 rounded-2xl border border-zinc-800 space-y-4 shadow-xl relative overflow-hidden flex flex-col shrink-0">
+
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
               <h3 className="oswald text-xs font-bold uppercase text-zinc-500 tracking-widest flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-orange-600"></span> Subject & Prompt
