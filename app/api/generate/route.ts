@@ -13,27 +13,28 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 500 });
         }
 
-        // 1. Image Generation (using gemini-2.5-flash)
+        // 1. Image Generation (using gemini-2.5-flash-image)
         if (task === 'image') {
-            // Use the specific model for images if requested, or default
             const imageModel = 'gemini-2.5-flash-image';
 
+            // Ensure contents is formatted correctly as Content[]
+            // The frontend sends 'prompt' as Part[] (array of parts)
+            const parts = Array.isArray(prompt) ? prompt : [{ text: prompt }];
 
             const response = await ai.models.generateContent({
                 model: imageModel,
-                contents: prompt,
+                contents: [
+                    {
+                        role: 'user',
+                        parts: parts
+                    }
+                ],
                 config: {
-                    responseModalities: ['IMAGE'],
+                    imageConfig: { aspectRatio: "1:1" },
                     ...config
                 }
             });
 
-            // Extract image data from response
-            // Note: The structure depends on the specific model response
-            // For simplicity, we return the full response and let the client parse specific parts if needed, 
-            // but ideally we should normalize here.
-            // However, 2.5-flash returns inline data URIs or similar.
-            // Let's return the raw candidates for the client to handle for now to match current logic.
             return NextResponse.json(response);
         }
 
