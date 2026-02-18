@@ -1,0 +1,7 @@
+{
+  "name": "CS Skins Creator",
+  "description": "A high-end social media content generator for gamers. Create stunning Instagram posts with AI-generated images, custom text overlays, and AI image analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
