@@ -48,8 +48,11 @@ export async function POST(req: NextRequest) {
 
     } catch (error: any) {
         console.error('Gemini API Error:', error);
+        if (error.response) {
+            console.error('Gemini API Response Error Data:', JSON.stringify(error.response, null, 2));
+        }
         return NextResponse.json(
-            { error: error.message || 'Error processing request' },
+            { error: error.message || 'Error processing request', details: error.toString() },
             { status: 500 }
         );
     }

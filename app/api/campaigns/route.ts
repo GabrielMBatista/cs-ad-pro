@@ -7,13 +7,21 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
         });
         return NextResponse.json(
-            campaigns.map((c) => ({
-                ...c,
-                createdAt: Number(c.createdAt),
-                overlays: JSON.parse(c.overlays),
-                skin: c.skinJson ? JSON.parse(c.skinJson) : undefined,
-            }))
+            campaigns.map((c) => {
+                let overlays = [];
+                let skin = undefined;
+                try { overlays = JSON.parse(c.overlays); } catch (e) { console.error('Failed to parse overlays for campaign', c.id); }
+                try { skin = c.skinJson ? JSON.parse(c.skinJson) : undefined; } catch (e) { console.error('Failed to parse skin for campaign', c.id); }
+
+                return {
+                    ...c,
+                    createdAt: Number(c.createdAt),
+                    overlays,
+                    skin,
+                };
+            })
         );
+
     } catch (error) {
         console.error('GET /api/campaigns error:', error);
         return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 });
