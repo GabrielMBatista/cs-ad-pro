@@ -659,7 +659,21 @@ const App: React.FC = () => {
           <div className="bg-zinc-900 border border-zinc-700 rounded-3xl w-full max-w-5xl h-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden relative">
             <button onClick={() => setShowCatalog(false)} className="absolute top-4 right-4 z-50 bg-zinc-800 hover:bg-zinc-700 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors">✕</button>
             <div className="p-8 h-full">
-              <SkinCatalog onSelect={(s) => { setSelectedOfficialSkin(s); setSelectedGame('Counter-Strike'); setShowCatalog(false); }} />
+              <SkinCatalog onSelect={async (s) => {
+                if (catalogMode === 'setup') {
+                  setSelectedOfficialSkin(s);
+                  setSelectedGame('Counter-Strike');
+                } else {
+                  try {
+                    const base64 = await imageUrlToBase64(s.image);
+                    addLayer('sticker', base64);
+                  } catch (e) {
+                    console.error("Failed to load sticker layer", e);
+                  }
+                }
+                setShowCatalog(false);
+                setCatalogMode('setup');
+              }} />
             </div>
           </div>
         </div>
