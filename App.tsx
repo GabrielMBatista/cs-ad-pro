@@ -597,6 +597,7 @@ const App: React.FC = () => {
                       onReorderLayers={handleReorderLayers}
                       onDeleteLayer={deleteLayer}
                       onAddLayer={addLayer}
+                      onRequestCatalog={() => { setCatalogMode('layer'); setShowCatalog(true); }}
                     />
                   </div>
 

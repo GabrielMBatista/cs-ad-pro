@@ -19,25 +19,40 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number, y: number } | null>(null);
 
-  const handleMouseDown = (e: React.MouseEvent, id: string) => {
+  const handleMouseDown = (e: React.MouseEvent, id: string, initialX: number, initialY: number) => {
     e.stopPropagation();
     onSelect(id);
+
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const currentMouseX = ((e.clientX - rect.left) / rect.width) * 100;
+      const currentMouseY = ((e.clientY - rect.top) / rect.height) * 100;
+      setDragOffset({
+        x: currentMouseX - initialX,
+        y: currentMouseY - initialY
+      });
+    }
     setDraggingId(id);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggingId || !containerRef.current) return;
+    if (!draggingId || !containerRef.current || !dragOffset) return;
 
     const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
+    const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
 
-    onUpdateLayer(draggingId, { x, y });
+    const newX = mouseX - dragOffset.x;
+    const newY = mouseY - dragOffset.y;
+
+    onUpdateLayer(draggingId, { x: newX, y: newY });
   };
 
   const handleMouseUp = () => {
     setDraggingId(null);
+    setDragOffset(null);
   };
 
   useEffect(() => {
@@ -73,12 +88,12 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
         <React.Fragment key={layer.id}>
           {layer.visible && (
             <div
-              onMouseDown={(e) => handleMouseDown(e, layer.id)}
+              onMouseDown={(e) => handleMouseDown(e, layer.id, layer.x, layer.y)}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelect(layer.id);
               }}
-              className={`absolute cursor-move select-none transition-all duration-200
+              className={`absolute cursor-move select-none transition-none
                     ${selectedId === layer.id ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-zinc-900 rounded-sm z-[9999]' : 'hover:ring-1 hover:ring-zinc-500'}`}
               style={{
                 left: `${layer.x}%`,
@@ -97,14 +112,16 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
                   lineHeight: 1.2,
                   width: 'max-content',
                   maxWidth: '80%'
-                } : {})
+                } : {
+                  width: '300px', // Standard reference size matching export logic
+                  maxWidth: '50%'
+                })
               }}
             >
               {layer.type === 'image' || layer.type === 'sticker' ? (
                 <img
                   src={layer.src}
                   className="w-full h-full object-contain pointer-events-none"
-                  style={{ minWidth: '50px' }} // Prevent tiny images
                 />
               ) : (
                 layer.text
