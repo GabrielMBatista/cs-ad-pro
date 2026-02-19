@@ -343,10 +343,20 @@ const App: React.FC = () => {
   const handleDownload = async () => {
     if (!backgroundImage) return;
 
-    const SIZE = 1024; // Output resolution
+    let width = 1080;
+    let height = 1080;
+
+    switch (aspectRatio) {
+      case '16:9': width = 1920; height = 1080; break;
+      case '9:16': width = 1080; height = 1920; break;
+      case '4:3': width = 1440; height = 1080; break;
+      case '3:4': width = 1080; height = 1440; break;
+      case '1:1': default: width = 1080; height = 1080; break;
+    }
+
     const canvas = document.createElement('canvas');
-    canvas.width = SIZE;
-    canvas.height = SIZE;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -363,9 +373,22 @@ const App: React.FC = () => {
       // Layer 1: Background
       const bgImg = await loadImage(backgroundImage);
       const bgAspect = bgImg.width / bgImg.height;
-      let bx = 0, by = 0, bw = SIZE, bh = SIZE;
-      if (bgAspect > 1) { bh = SIZE / bgAspect; by = (SIZE - bh) / 2; }
-      else { bw = SIZE * bgAspect; bx = (SIZE - bw) / 2; }
+      const canvasAspect = width / height;
+
+      let bx = 0, by = 0, bw = width, bh = height;
+
+      // Object cover logic
+      if (bgAspect > canvasAspect) {
+        // Image is wider than canvas -> crop width
+        bh = height;
+        bw = height * bgAspect;
+        bx = (width - bw) / 2;
+      } else {
+        // Image is taller than canvas -> crop height
+        bw = width;
+        bh = width / bgAspect;
+        by = (height - bh) / 2;
+      }
       ctx.drawImage(bgImg, bx, by, bw, bh);
 
       // Sort layers by zIndex
@@ -373,8 +396,8 @@ const App: React.FC = () => {
 
       for (const layer of renderLayers) {
         ctx.save();
-        const lx = (layer.x / 100) * SIZE;
-        const ly = (layer.y / 100) * SIZE;
+        const lx = (layer.x / 100) * width;
+        const ly = (layer.y / 100) * height;
 
         ctx.translate(lx, ly);
         ctx.rotate((layer.rotation * Math.PI) / 180);
@@ -388,7 +411,7 @@ const App: React.FC = () => {
           // UI Base Width = 600px.
           // UI Image Max Width = 300px (which is 50% of base).
           // Therefore, Export Base Width should be SIZE * 0.5.
-          const baseWidth = SIZE * 0.5;
+          const baseWidth = width * 0.5;
 
           // Maintain aspect ratio
           const aspect = img.width / img.height;
@@ -401,7 +424,7 @@ const App: React.FC = () => {
           ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
 
         } else if (layer.type === 'text' && layer.text && layer.style) {
-          const scaledFontSize = layer.style.fontSize! * (SIZE / 600);
+          const scaledFontSize = layer.style.fontSize! * (width / 600);
 
           ctx.font = `${layer.style.fontWeight} ${scaledFontSize}px ${layer.style.fontFamily}`;
           ctx.fillStyle = layer.style.color!;
@@ -415,7 +438,7 @@ const App: React.FC = () => {
             ctx.shadowOffsetY = 2;
           }
 
-          const MAX_WIDTH = SIZE * 0.8; // Match the 80% maxWidth from CSS
+          const MAX_WIDTH = width * 0.8; // Match the 80% maxWidth from CSS
           const rawLines = layer.text.split('\n');
           const wrappedLines: string[] = [];
 
@@ -462,6 +485,19 @@ const App: React.FC = () => {
       alert('Falha ao exportar.');
     }
   };
+
+  // Calculate Preview Dimensions based on Aspect Ratio
+  const getPreviewDimensions = () => {
+    switch (aspectRatio) {
+      case '16:9': return { width: '600px', height: `${600 * (9 / 16)}px` };
+      case '9:16': return { width: `${600 * (9 / 16)}px`, height: '600px' };
+      case '4:3': return { width: '600px', height: `${600 * (3 / 4)}px` };
+      case '3:4': return { width: `${600 * (3 / 4)}px`, height: '600px' };
+      case '1:1': default: return { width: '600px', height: '600px' };
+    }
+  };
+
+  const previewDims = getPreviewDimensions();
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-orange-500/30 overflow-hidden">
@@ -589,8 +625,8 @@ const App: React.FC = () => {
               {/* Responsive Container for Fixed Resolution Preview */}
               <div className="relative w-full h-full flex items-center justify-center">
                 <div style={{
-                  width: '600px',
-                  height: '600px',
+                  width: previewDims.width,
+                  height: previewDims.height,
                   transform: 'scale(var(--scale-factor, 1))',
                   transformOrigin: 'center center'
                 }}
@@ -598,12 +634,17 @@ const App: React.FC = () => {
                     if (!el || !el.parentElement) return;
                     const resizeObserver = new ResizeObserver(() => {
                       const parent = el.parentElement!;
-                      const scale = Math.min(parent.clientWidth / 650, parent.clientHeight / 650);
+                      // Calculate scale to fit parent
+                      const targetW = el.clientWidth || parseFloat(previewDims.width);
+                      const targetH = el.clientHeight || parseFloat(previewDims.height);
+
+                      // Add some padding (40px)
+                      const scale = Math.min(parent.clientWidth / (targetW + 40), parent.clientHeight / (targetH + 40));
                       el.style.setProperty('--scale-factor', scale.toString());
                     });
                     resizeObserver.observe(el.parentElement);
                   }}
-                  className="shadow-2xl shadow-black"
+                  className="shadow-2xl shadow-black transition-all duration-300 ease-in-out"
                 >
                   <CanvasOverlay
                     image={backgroundImage}
