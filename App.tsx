@@ -17,6 +17,8 @@ import SkinCatalog from './components/SkinCatalog';
 import CampaignHistory from './components/CampaignHistory';
 import QuickSkinSearch from './components/QuickSkinSearch';
 import LayerManager from './components/LayerManager';
+import IdeaShowcase from './components/IdeaShowcase';
+import { ShowcaseItem } from './services/showcaseData';
 
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState('');
@@ -35,7 +37,7 @@ const App: React.FC = () => {
   const [analysisResult, setAnalysisResult] = useState('');
   const [editPrompt, setEditPrompt] = useState('');
   const [selectedOfficialSkin, setSelectedOfficialSkin] = useState<CSGOSkin | undefined>();
-  const [leftTab, setLeftTab] = useState<'setup' | 'templates'>('setup');
+  const [leftTab, setLeftTab] = useState<'setup' | 'templates' | 'ideas'>('setup');
   const [rightPanelTab, setRightPanelTab] = useState<'layers' | 'refine' | 'analyze' | 'history'>('layers');
   const [showCatalog, setShowCatalog] = useState(false);
   const [catalogMode, setCatalogMode] = useState<'setup' | 'layer'>('setup');
@@ -339,6 +341,15 @@ const App: React.FC = () => {
     if (campaign.skin) setSelectedOfficialSkin(campaign.skin);
   };
 
+  const handleSelectIdea = (item: ShowcaseItem) => {
+    setPrompt(item.prompt);
+    if (item.skin) {
+      setSelectedOfficialSkin(item.skin);
+      setSelectedGame('Counter-Strike');
+    }
+    setLeftTab('setup');
+  };
+
   const handleReset = () => {
     if (confirm("Start a new ad? This will clear your current workspace.")) {
       setBackgroundImage('');
@@ -582,9 +593,10 @@ const App: React.FC = () => {
           <div className="col-span-3 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1 min-h-0" style={{ height: '100%' }}>
             {/* Setup & Template Tabs */}
             <div className="bg-zinc-900/50 p-1 rounded-2xl border border-zinc-800 shadow-xl overflow-hidden shrink-0">
-              <div className="grid grid-cols-2 p-1 gap-1 bg-zinc-950/50 rounded-t-xl">
+              <div className="grid grid-cols-3 p-1 gap-1 bg-zinc-950/50 rounded-t-xl">
                 <button onClick={() => setLeftTab('setup')} className={`py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'setup' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Setup</button>
                 <button onClick={() => setLeftTab('templates')} className={`py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'templates' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Templates</button>
+                <button onClick={() => setLeftTab('ideas')} className={`py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'ideas' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Ideias</button>
               </div>
 
               <div className="p-4 space-y-4">
@@ -628,6 +640,9 @@ const App: React.FC = () => {
                     onUpdateLayer={updateLayer}
                     onDeleteLayer={deleteLayer}
                   />
+                )}
+                {leftTab === 'ideas' && (
+                  <IdeaShowcase onSelect={handleSelectIdea} />
                 )}
               </div>
             </div>
