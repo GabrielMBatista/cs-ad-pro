@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Campaign } from '../types';
-import { getCampaigns, deleteCampaign, clearHistory } from '../services/historyService';
+import { getCampaigns, deleteCampaign, clearHistory, saveCampaign } from '../services/historyService';
 
 interface CampaignHistoryProps {
     onLoad: (campaign: Campaign) => void;
@@ -71,17 +71,12 @@ const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
 
                 if (!Array.isArray(json)) throw new Error('Invalid JSON format: Not an array');
 
-                // Call bulk import API
-                const response = await fetch('/api/campaigns/import', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(json)
-                });
+                // Save directly to IndexedDB
+                for (const item of json) {
+                    await saveCampaign(item);
+                }
 
-                if (!response.ok) throw new Error('Import failed');
-
-                const result = await response.json();
-                alert(`Import successful! ${result.count} campaigns restored.`);
+                alert(`Import successful! ${json.length} campaigns restored.`);
                 loadHistory();
 
             } catch (err: any) {

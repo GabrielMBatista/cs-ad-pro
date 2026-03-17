@@ -37,7 +37,7 @@ const App: React.FC = () => {
   const [analysisResult, setAnalysisResult] = useState('');
   const [editPrompt, setEditPrompt] = useState('');
   const [selectedOfficialSkin, setSelectedOfficialSkin] = useState<CSGOSkin | undefined>();
-  const [leftTab, setLeftTab] = useState<'setup' | 'templates' | 'ideas'>('setup');
+  const [leftTab, setLeftTab] = useState<'setup' | 'templates' | 'ideas' | 'history'>('ideas');
   const [rightPanelTab, setRightPanelTab] = useState<'layers' | 'refine' | 'analyze' | 'history'>('layers');
   const [showCatalog, setShowCatalog] = useState(false);
   const [catalogMode, setCatalogMode] = useState<'setup' | 'layer'>('setup');
@@ -343,10 +343,24 @@ const App: React.FC = () => {
 
   const handleSelectIdea = (item: ShowcaseItem) => {
     setPrompt(item.prompt);
+
     if (item.skin) {
       setSelectedOfficialSkin(item.skin as any);
-      setSelectedGame('Counter-Strike');
+      setSelectedGame('csgo');
     }
+
+    if (item.layers) {
+      setLayers(item.layers);
+    }
+
+    if (item.backgroundImage) {
+      setBackgroundImage(item.backgroundImage);
+    }
+
+    if (item.aspectRatio) {
+      setAspectRatio(item.aspectRatio);
+    }
+
     setLeftTab('setup');
   };
 

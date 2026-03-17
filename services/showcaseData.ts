@@ -1,43 +1,66 @@
+import { Layer, AspectRatio } from "../types";
+
 export interface ShowcaseItem {
     id: string;
     title: string;
     prompt: string;
     imageUrl: string;
-    skin?: {
+    backgroundImage?: string;
+    layers: Layer[];
+    aspectRatio?: AspectRatio;
+    skin: {
+        id: string;
         name: string;
         image: string;
+        weapon: {
+            id: string;
+            name: string;
+        };
+        rarity?: {
+            id: string;
+            name: string;
+            color: string;
+        };
     };
 }
 
 export const SHOWCASE_IDEAS: ShowcaseItem[] = [
     {
-        id: "showcase-1",
+        id: "d5fb99d5-b59b-4414-aa6f-796486cb37a1",
         title: "AWP | Dragon Lore - Legendary Myth",
-        prompt: "Create a Legendary Mythological Fantasy advertisement background for a CS:GO Skin. Scene: Ancient ruins, Floating magical particles, Smoke and embers, Gold treasure room background. Lighting: Golden Hour, Dramatic God Rays, Warm Fire Glow. Mood: Epic, High-Budget Marketing, 8k Resolution, Unreal Engine 5 Render. Colors: Match the vibe of 'AWP | Dragon Lore'.",
-        imageUrl: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1000",
+        prompt: "Create a Legendary Mythological Fantasy advertisement background for a CS:GO Skin. Scene: Ancient ruins, Floating magical particles, Smoke and embers, Gold treasure room background. Lighting: Golden Hour, Dramatic God Rays, Warm Fire Glow. Mood: Epic, High-Budget Marketing, 8k Resolution, Unreal Engine 5 Render. Composition: Center the view for a product placement (Note: The product will be composited later, leave the center clean/empty or with a podium). Colors: Match the vibe of 'AWP | Dragon Lore'.",
+        imageUrl: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJD_9W7m5a0mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f",
+        backgroundImage: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJD_9W7m5a0mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f",
+        aspectRatio: "9:16",
         skin: {
-            name: "AWP | Dragon Lore",
-            image: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJD_9W7m5a0mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f"
-        }
+            id: "awp_dragon_lore",
+            name: "Dragon Lore",
+            image: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJD_9W7m5a0mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f",
+            weapon: { id: "awp", name: "AWP" },
+            rarity: { id: "coverit", name: "Covert", color: "#eb4b4b" }
+        },
+        layers: [
+            { id: "l1", type: "text", text: "DRAGON LORE", x: 50, y: 15, zIndex: 100, rotation: 0, scale: 1, opacity: 1, visible: true, locked: false, style: { fontSize: 32, color: "#ffffff", fontFamily: "Oswald", fontWeight: "900", textAlign: "center" } },
+            { id: "l2", type: "text", text: "AWP", x: 50, y: 10, zIndex: 101, rotation: 0, scale: 1, opacity: 1, visible: true, locked: false, style: { fontSize: 14, color: "#F97316", fontFamily: "Inter", fontWeight: "900", textAlign: "center" } }
+        ]
     },
     {
-        id: "showcase-2",
+        id: "a5fd0404-84ce-45a4-adc0-668ba4edc982",
         title: "M4A4 | Bullet Rain - Action Scene",
-        prompt: "Create a Cinematic Action Product Showcase advertisement background for a CS:GO Skin. Scene: Intense urban firefight, rain hitting the pavement, sparks from ricochets, neon city lights in the background. Lighting: Moody Blue and Red Neon, Flash of Gunfire. Mood: Fast-paced, Gritty, Cyberpunk Action, Photorealistic. Colors: Match the vibe of 'M4A4 | Bullet Rain'.",
-        imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1000",
+        prompt: "Create a Cinematic Product Showcase advertisement background for a CS:GO Skin. Scene: Professional gaming setup background with clean lighting and high-tech minimalist elements. Lighting: Blue and white studio lighting with soft highlights. Mood: Modern, Clean, Professional. Colors: Match the vibe of 'M4A4 | Bullet Rain'.",
+        imageUrl: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszfjLpAf8i5mY60mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f",
+        backgroundImage: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszfjLpAf8i5mY60mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f",
+        aspectRatio: "9:16",
         skin: {
-            name: "M4A4 | Bullet Rain",
-            image: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszfjLpAf8i5mY60mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f"
-        }
-    },
-    {
-        id: "showcase-3",
-        title: "Desert Shamagh - Tactical Sand",
-        prompt: "Create a Cinematic Product Showcase advertisement background for a CS:GO Skin. Scene: High-tech military lab, desert base at dawn, swirling sand in the air. Lighting: Natural desert sunlight with cool blue interior shadows. Mood: Professional, Stealthy, High-Resolution. Colors: Match the vibe of '★ Hand Wraps | Desert Shamagh'.",
-        imageUrl: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?auto=format&fit=crop&q=80&w=1000",
-        skin: {
-            name: "★ Hand Wraps | Desert Shamagh",
-            image: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSs_gFpxs0fTjJ9-966m4-Zkvb7N7PukmpY7cZ9j9bM8Ij8nVn6_xVrZ2HycY-TdlU8ZV-G-lPrwu3v1pTu6JrPynEx7yYjsGwj2B_i/360fx360f"
-        }
+            id: "m4a4_bullet_rain",
+            name: "Bullet Rain",
+            image: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszfjLpAf8i5mY60mvLwOq7c2D9Uv8Am07iS8Nis3A3mqhY6ajunJ9ScdgE6N1iE_lW9le_o0MTu78idm3Vmu3Nx-z-DyG2XfX7V/360fx360f",
+            weapon: { id: "m4a4", name: "M4A4" },
+            rarity: { id: "covert", name: "Covert", color: "#eb4b4b" }
+        },
+        layers: [
+            { id: "l1", type: "text", text: "BULLET RAIN", x: 50, y: 15, zIndex: 100, rotation: 0, scale: 1, opacity: 1, visible: true, locked: false, style: { fontSize: 32, color: "#ffffff", fontFamily: "Oswald", fontWeight: "900", textAlign: "center" } },
+            { id: "l2", type: "text", text: "M4A4", x: 50, y: 10, zIndex: 101, rotation: 0, scale: 1, opacity: 1, visible: true, locked: false, style: { fontSize: 14, color: "#F97316", fontFamily: "Inter", fontWeight: "900", textAlign: "center" } }
+        ]
     }
 ];
