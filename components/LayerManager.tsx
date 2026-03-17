@@ -103,17 +103,17 @@ const LayerManager: React.FC<LayerManagerProps> = ({
     return (
         <div className="flex flex-col gap-4">
             {/* Actions */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col xs:flex-row gap-2">
                 <button
                     onClick={() => onAddLayer('text')}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                     <span>T</span> Add Text
                 </button>
-                <div className="relative">
+                <div className="relative flex-1">
                     <button
                         onClick={() => setShowImageMenu(!showImageMenu)}
-                        className="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                         <span>🖼</span> Add Image
                     </button>

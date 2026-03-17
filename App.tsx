@@ -542,16 +542,22 @@ const App: React.FC = () => {
           <span className="oswald text-xl font-bold tracking-tighter uppercase">CS <span className="text-orange-600">AD-PRO</span></span>
         </div>
 
-        <div className="flex items-center gap-4">
-          {isSaving && <span className="text-[10px] text-zinc-500 animate-pulse uppercase font-black">Autosaving...</span>}
+        <div className="flex items-center gap-2 md:gap-4">
+          {isSaving && <span className="hidden sm:inline text-[10px] text-zinc-500 animate-pulse uppercase font-black">Autosaving...</span>}
 
           <div className="relative">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 transition-all ${apiKey ? 'border-green-600/50 bg-green-600/10 text-green-400' : 'border-zinc-700 bg-zinc-800/50 text-zinc-400'}`}
+              className={`px-2 md:px-3 py-1.5 rounded-lg border flex items-center gap-2 transition-all ${apiKey ? 'border-green-600/50 bg-green-600/10 text-green-400' : 'border-zinc-700 bg-zinc-800/50 text-zinc-400'}`}
             >
-              <span className="text-[10px] font-black uppercase tracking-widest">{apiKey ? 'API KEY ACTIVE' : 'SET API KEY'}</span>
-              <div className={`w-1.5 h-1.5 rounded-full ${apiKey ? 'bg-green-500 animate-pulse' : 'bg-zinc-600'}`}></div>
+              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest leading-none">
+                {apiKey ? (
+                  <span className="flex items-center gap-1">
+                    <span className="hidden xs:inline">API KEY</span> ACTIVE
+                  </span>
+                ) : 'SET API KEY'}
+              </span>
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${apiKey ? 'bg-green-500 animate-pulse' : 'bg-zinc-600'}`}></div>
             </button>
 
             {showSettings && (
@@ -600,17 +606,17 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="max-w-[1920px] mx-auto w-full p-4 overflow-hidden" style={{ height: 'calc(100vh - 4rem)' }}>
-        <div className="grid grid-cols-12 gap-4 h-full">
+      <main className="max-w-[1920px] mx-auto w-full p-2 md:p-4 overflow-x-hidden overflow-y-auto md:overflow-hidden lg:h-[calc(100vh-4rem)]">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 h-full">
 
           {/* LEFT COLUMN: CREATION ENGINE (3 cols) */}
-          <div className="col-span-3 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1 min-h-0" style={{ height: '100%' }}>
+          <div className="lg:col-span-3 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1 min-h-0 order-2 lg:order-1">
             {/* Setup & Template Tabs */}
             <div className="bg-zinc-900/50 p-1 rounded-2xl border border-zinc-800 shadow-xl overflow-hidden shrink-0">
-              <div className="grid grid-cols-3 p-1 gap-1 bg-zinc-950/50 rounded-t-xl">
-                <button onClick={() => setLeftTab('setup')} className={`py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'setup' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Setup</button>
-                <button onClick={() => setLeftTab('templates')} className={`py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'templates' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Templates</button>
-                <button onClick={() => setLeftTab('ideas')} className={`py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'ideas' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Ideias</button>
+              <div className="flex p-1 gap-1 bg-zinc-950/50 rounded-t-xl overflow-x-auto no-scrollbar">
+                <button onClick={() => setLeftTab('setup')} className={`flex-1 min-w-[70px] py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'setup' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Setup</button>
+                <button onClick={() => setLeftTab('templates')} className={`flex-1 min-w-[70px] py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'templates' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Templates</button>
+                <button onClick={() => setLeftTab('ideas')} className={`flex-1 min-w-[70px] py-2 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all ${leftTab === 'ideas' ? 'bg-zinc-800 text-orange-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Ideias</button>
               </div>
 
               <div className="p-4 space-y-4">
@@ -698,7 +704,7 @@ const App: React.FC = () => {
           </div>
 
           {/* CENTER COLUMN: CANVAS */}
-          <div className="col-span-6 flex flex-col gap-4 h-full relative">
+          <div className="lg:col-span-6 flex flex-col gap-4 min-h-[400px] lg:h-full relative order-1 lg:order-2">
             <div className="flex-1 bg-zinc-900/30 rounded-3xl border border-zinc-800 flex items-center justify-center p-8 backdrop-blur-sm relative overflow-hidden group">
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
@@ -745,10 +751,10 @@ const App: React.FC = () => {
           </div>
 
           {/* RIGHT COLUMN: TOOLS */}
-          <div className="col-span-3 flex flex-col gap-0 bg-zinc-900/50 rounded-2xl border border-zinc-800 overflow-hidden min-h-0">
-            <div className="flex border-b border-zinc-800">
+          <div className="lg:col-span-3 flex flex-col gap-0 bg-zinc-900/50 rounded-2xl border border-zinc-800 overflow-hidden min-h-[300px] lg:h-full order-3">
+            <div className="flex border-b border-zinc-800 overflow-x-auto no-scrollbar">
               {(['layers', 'refine', 'analyze', 'history'] as const).map(t => (
-                <button key={t} onClick={() => setRightPanelTab(t)} className={`flex-1 py-3 text-[9px] font-black uppercase tracking-wider transition-colors ${rightPanelTab === t ? 'bg-zinc-800 text-orange-500 border-b-2 border-orange-500' : 'text-zinc-500 hover:text-zinc-300'}`}>{t}</button>
+                <button key={t} onClick={() => setRightPanelTab(t)} className={`flex-1 min-w-[70px] py-3 text-[9px] font-black uppercase tracking-wider transition-colors ${rightPanelTab === t ? 'bg-zinc-800 text-orange-500 border-b-2 border-orange-500' : 'text-zinc-500 hover:text-zinc-300'}`}>{t}</button>
               ))}
             </div>
 
