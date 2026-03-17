@@ -673,7 +673,7 @@ const App: React.FC = () => {
 
               {selectedOfficialSkin && (
                 <div className="flex items-center gap-3 p-3 bg-zinc-950 rounded-xl border border-orange-600/40 shadow-inner group relative overflow-hidden">
-                  <img src={selectedOfficialSkin.image} className="w-16 h-16 object-contain bg-zinc-900 rounded-lg shadow-sm z-10" />
+                  <img src={selectedOfficialSkin.image} referrerPolicy="no-referrer" className="w-16 h-16 object-contain bg-zinc-900 rounded-lg shadow-sm z-10" />
                   <div className="flex-1 min-w-0 z-10">
                     <h4 className="text-[10px] font-black uppercase text-orange-400 truncate">{selectedOfficialSkin.name}</h4>
                     <button onClick={() => setSelectedOfficialSkin(undefined)} className="text-[8px] font-bold text-zinc-500 hover:text-white transition-colors mt-1">REMOVE</button>

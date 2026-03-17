@@ -35,6 +35,23 @@ const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
         }
     };
 
+    const handleExportSingle = (campaign: Campaign, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const dataStr = JSON.stringify(campaign, (key, value) => {
+            if (typeof value === 'bigint') return value.toString();
+            return value;
+        }, 2);
+
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const name = campaign.skin?.name ? campaign.skin.name.replace(/\s+/g, '_').toLowerCase() : 'campaign';
+        a.download = `cs-ad-pro-idea-${name}-${campaign.id.slice(0, 8)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const handleExport = () => {
         if (campaigns.length === 0) return alert('No history to export.');
 
@@ -156,12 +173,36 @@ const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
                                 </p>
                             </div>
 
-                            <button
-                                onClick={(e) => handleDelete(c.id, e)}
-                                className="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-red-600/80 rounded flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all font-bold text-xs"
-                            >
-                                ✕
-                            </button>
+                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const dataStr = JSON.stringify(c, (key, value) => {
+                                            if (typeof value === 'bigint') return value.toString();
+                                            return value;
+                                        }, 2);
+                                        const blob = new Blob([dataStr], { type: 'application/json' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        const name = c.skin?.name ? c.skin.name.replace(/\s+/g, '_').toLowerCase() : 'campaign';
+                                        a.download = `cs-ad-pro-idea-${name}-${c.id.slice(0, 8)}.json`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    }}
+                                    title="Download Single JSON"
+                                    className="w-6 h-6 bg-black/50 hover:bg-orange-600 rounded flex items-center justify-center text-white font-bold text-[10px]"
+                                >
+                                    ↓
+                                </button>
+                                <button
+                                    onClick={(e) => handleDelete(c.id, e)}
+                                    title="Delete"
+                                    className="w-6 h-6 bg-black/50 hover:bg-red-600/80 rounded flex items-center justify-center text-white font-bold text-xs"
+                                >
+                                    ✕
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>

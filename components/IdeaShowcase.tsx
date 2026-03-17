@@ -26,6 +26,7 @@ const IdeaShowcase: React.FC<IdeaShowcaseProps> = ({ onSelect }) => {
                                 src={item.imageUrl}
                                 className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                                 alt={item.title}
+                                referrerPolicy="no-referrer"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
 

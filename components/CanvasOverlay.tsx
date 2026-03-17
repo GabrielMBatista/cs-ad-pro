@@ -89,6 +89,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
           src={image}
           alt="Background"
           className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+          referrerPolicy="no-referrer"
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-zinc-600 italic text-sm uppercase tracking-widest font-bold">
@@ -135,6 +136,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
                 <img
                   src={layer.src}
                   className="w-full h-full object-contain pointer-events-none"
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 layer.text
