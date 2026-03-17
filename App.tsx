@@ -42,6 +42,11 @@ const App: React.FC = () => {
 
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
   const [useThinking, setUseThinking] = useState(false);
+  const [apiKey, setApiKey] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem('GMAX_GEMINI_API_KEY') || '';
+  });
+  const [showSettings, setShowSettings] = useState(false);
 
   const [games, setGames] = useState<string[]>(() => {
     if (typeof window === 'undefined') return ['Counter-Strike', 'Valorant', 'League of Legends', 'Vida Real (Real World)'];
@@ -87,7 +92,12 @@ const App: React.FC = () => {
     localStorage.setItem('CS-games', JSON.stringify(games));
     localStorage.setItem('CS-fonts', JSON.stringify(fonts));
     localStorage.setItem('CS-styles', JSON.stringify(colorStyles));
-  }, [games, fonts, colorStyles]);
+    if (apiKey) {
+      localStorage.setItem('GMAX_GEMINI_API_KEY', apiKey);
+    } else {
+      localStorage.removeItem('GMAX_GEMINI_API_KEY');
+    }
+  }, [games, fonts, colorStyles, apiKey]);
 
   // Auto-Prompt Engine
   useEffect(() => {
@@ -509,6 +519,47 @@ const App: React.FC = () => {
 
         <div className="flex items-center gap-4">
           {isSaving && <span className="text-[10px] text-zinc-500 animate-pulse uppercase font-black">Autosaving...</span>}
+
+          <div className="relative">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 transition-all ${apiKey ? 'border-green-600/50 bg-green-600/10 text-green-400' : 'border-zinc-700 bg-zinc-800/50 text-zinc-400'}`}
+            >
+              <span className="text-[10px] font-black uppercase tracking-widest">{apiKey ? 'API KEY ACTIVE' : 'SET API KEY'}</span>
+              <div className={`w-1.5 h-1.5 rounded-full ${apiKey ? 'bg-green-500 animate-pulse' : 'bg-zinc-600'}`}></div>
+            </button>
+
+            {showSettings && (
+              <div className="absolute top-full right-0 mt-2 w-72 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-4 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Settings</h4>
+                    <button onClick={() => setShowSettings(false)} className="text-zinc-600 hover:text-white">✕</button>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-600 uppercase">Google Gemini API Key</label>
+                    <input
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      placeholder="Paste your API key here..."
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs outline-none focus:border-orange-500 transition-colors"
+                    />
+                    <p className="text-[8px] text-zinc-500 leading-tight">Your key is saved locally in your browser and never shared elsewhere.</p>
+                  </div>
+                  {apiKey && (
+                    <button
+                      onClick={() => { setApiKey(''); setShowSettings(false); }}
+                      className="w-full py-2 bg-red-950/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                    >
+                      Clear API Key
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="hidden md:flex gap-2">
             <button onClick={handleReset} className="px-4 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800/50 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors">
               + New Ad

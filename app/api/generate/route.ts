@@ -9,9 +9,15 @@ export async function POST(req: NextRequest) {
     try {
         const { prompt, model = 'gemini-flash-latest', config, task } = await req.json();
 
-        if (!apiKey) {
+        // Use key from header if provided, otherwise fallback to server env
+        const clientApiKey = req.headers.get('x-api-key');
+        const activeApiKey = clientApiKey || apiKey;
+
+        if (!activeApiKey) {
             return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 500 });
         }
+
+        const ai = new GoogleGenAI({ apiKey: activeApiKey });
 
         // 1. Image Generation (using gemini-2.5-flash-image)
         if (task === 'image') {

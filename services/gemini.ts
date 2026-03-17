@@ -3,9 +3,16 @@ import { AspectRatio } from "../types";
 
 // Helper to call our internal API
 async function callInternalApi(payload: any) {
+  const apiKey = typeof window !== 'undefined' ? localStorage.getItem('GMAX_GEMINI_API_KEY') : null;
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+  if (apiKey) {
+    headers['x-api-key'] = apiKey;
+  }
+
   const response = await fetch('/api/generate', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(payload)
   });
 
