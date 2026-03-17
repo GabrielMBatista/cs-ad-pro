@@ -26,6 +26,7 @@ Create professional social media assets for skin sales in seconds using Generati
   - ❓ **Post-Match**: "How was the match?" engagement.
   - ⚔️ **VS Float**: Before/After comparison.
 - **History Persistence**: All campaigns are saved automatically to the database.
+- **Privacy & Autonomy**: Support for user-provided API Keys saved locally via `localStorage`.
 
 ## 🛠️ Setup Locally
 
@@ -40,12 +41,13 @@ Create professional social media assets for skin sales in seconds using Generati
    npm install
    ```
 
-3. **Configure Environment Variables:**
+4. **Configure Environment Variables:**
    Rename `.env.example` to `.env.local` and add your keys:
    ```env
-   GEMINI_API_KEY=your_gemini_api_key
+   GEMINI_API_KEY=your_gemini_api_key (Optional if user provides their own)
    DATABASE_URL="file:./dev.db"
    ```
+   *Note: If no `GEMINI_API_KEY` is provided in the environment, the app will require the user to enter their own key in the UI.*
 
 
 4. **Setup Database:**
