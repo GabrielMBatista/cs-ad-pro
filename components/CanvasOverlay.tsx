@@ -1,6 +1,6 @@
 
 import React, { useRef, useState, useEffect } from 'react';
-import { Layer } from '../types';
+import { Layer, AspectRatio } from '../types';
 
 interface CanvasOverlayProps {
   image: string; // Background
@@ -8,6 +8,7 @@ interface CanvasOverlayProps {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onUpdateLayer: (id: string, updates: Partial<Layer>) => void;
+  aspectRatio: AspectRatio;
 }
 
 const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
@@ -16,6 +17,7 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
   selectedId,
   onSelect,
   onUpdateLayer,
+  aspectRatio
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -64,10 +66,20 @@ const CanvasOverlay: React.FC<CanvasOverlayProps> = ({
   // Sort layers by zIndex for rendering order
   const sortedLayers = [...layers].sort((a, b) => a.zIndex - b.zIndex);
 
+  const getAspectRatioClass = () => {
+    switch (aspectRatio) {
+      case '16:9': return 'aspect-video';
+      case '9:16': return 'aspect-[9/16]';
+      case '4:3': return 'aspect-[4/3]';
+      case '3:4': return 'aspect-[3/4]';
+      case '1:1': default: return 'aspect-square';
+    }
+  };
+
   return (
     <div
       ref={containerRef}
-      className="relative w-full aspect-[1/1] bg-zinc-950 rounded-lg overflow-hidden shadow-2xl shadow-black group cursor-crosshair border border-zinc-800"
+      className={`relative w-full ${getAspectRatioClass()} bg-zinc-950 rounded-lg overflow-hidden shadow-2xl shadow-black group cursor-crosshair border border-zinc-800`}
       onMouseMove={handleMouseMove}
       onClick={() => onSelect(null)}
     >

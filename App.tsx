@@ -344,7 +344,7 @@ const App: React.FC = () => {
   const handleSelectIdea = (item: ShowcaseItem) => {
     setPrompt(item.prompt);
     if (item.skin) {
-      setSelectedOfficialSkin(item.skin);
+      setSelectedOfficialSkin(item.skin as any);
       setSelectedGame('Counter-Strike');
     }
     setLeftTab('setup');
@@ -718,6 +718,7 @@ const App: React.FC = () => {
                     selectedId={selectedLayerId}
                     onSelect={setSelectedLayerId}
                     onUpdateLayer={updateLayer}
+                    aspectRatio={aspectRatio}
                   />
                 </div>
               </div>
