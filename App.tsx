@@ -19,6 +19,7 @@ import QuickSkinSearch from './components/QuickSkinSearch';
 import LayerManager from './components/LayerManager';
 import IdeaShowcase from './components/IdeaShowcase';
 import { ShowcaseItem } from './services/showcaseData';
+import { NotificationSystem, NotificationType } from './components/NotificationSystem';
 
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState('');
@@ -49,6 +50,23 @@ const App: React.FC = () => {
     return localStorage.getItem('GMAX_GEMINI_API_KEY') || '';
   });
   const [showSettings, setShowSettings] = useState(false);
+
+  // Notification State
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  const showAlert = (message: string, title: string = 'Aviso', type: NotificationType = 'info') => {
+    const id = crypto.randomUUID();
+    setNotifications(prev => [...prev, { id, message, title, type }]);
+  };
+
+  const showConfirm = (message: string, onConfirm: () => void, title: string = 'Confirmação') => {
+    const id = crypto.randomUUID();
+    setNotifications(prev => [...prev, { id, message, title, type: 'confirm' as const, onConfirm }]);
+  };
+
+  const closeNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
 
   const [games, setGames] = useState<string[]>(() => {
     if (typeof window === 'undefined') return ['Counter-Strike', 'Valorant', 'League of Legends', 'Vida Real (Real World)'];
@@ -276,7 +294,7 @@ const App: React.FC = () => {
 
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Falha na síntese. Verifique API Key.");
+      showAlert(err.message || "Falha na síntese. Verifique API Key.", "Error", "error");
     } finally {
       setIsLoading(false);
       setLoadingStage('');
@@ -365,14 +383,14 @@ const App: React.FC = () => {
   };
 
   const handleReset = () => {
-    if (confirm("Start a new ad? This will clear your current workspace.")) {
+    showConfirm("Start a new ad? This will clear your current workspace.", () => {
       setBackgroundImage('');
       setLayers([]);
       setPrompt('');
       setSelectedOfficialSkin(undefined);
       setAnalysisResult('');
       setCampaignId(crypto.randomUUID());
-    }
+    });
   };
 
   const handleDownload = async () => {
@@ -517,7 +535,7 @@ const App: React.FC = () => {
 
     } catch (err) {
       console.error('Download failed:', err);
-      alert('Falha ao exportar.');
+      showAlert('Falha ao exportar.', 'Error', 'error');
     }
   };
 
@@ -810,7 +828,11 @@ const App: React.FC = () => {
               {rightPanelTab === 'history' && (
                 <div className="space-y-4 animate-in fade-in duration-300 h-full">
                   <h3 className="oswald text-xs font-bold uppercase text-zinc-500 tracking-widest">Campaign Archive</h3>
-                  <CampaignHistory onLoad={handleLoadCampaign} />
+                  <CampaignHistory
+                    onLoad={handleLoadCampaign}
+                    showAlert={showAlert}
+                    showConfirm={showConfirm}
+                  />
                 </div>
               )}
             </div>
@@ -853,6 +875,11 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
+
+      <NotificationSystem
+        notifications={notifications}
+        onClose={closeNotification}
+      />
     </div>
   );
 };

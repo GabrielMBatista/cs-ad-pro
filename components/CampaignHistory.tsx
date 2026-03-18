@@ -4,9 +4,11 @@ import { getCampaigns, deleteCampaign, clearHistory, saveCampaign } from '../ser
 
 interface CampaignHistoryProps {
     onLoad: (campaign: Campaign) => void;
+    showAlert: (message: string, title?: string, type?: any) => void;
+    showConfirm: (message: string, onConfirm: () => void, title?: string) => void;
 }
 
-const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
+const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad, showAlert, showConfirm }) => {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [importing, setImporting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,17 +24,17 @@ const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (confirm('Delete this campaign?')) {
+        showConfirm('Delete this campaign?', async () => {
             await deleteCampaign(id);
             loadHistory();
-        }
+        });
     };
 
     const handleClear = async () => {
-        if (confirm('Clear ALL history? This cannot be undone.')) {
+        showConfirm('Clear ALL history? This cannot be undone.', async () => {
             await clearHistory();
             loadHistory();
-        }
+        });
     };
 
     const handleExportSingle = (campaign: Campaign, e: React.MouseEvent) => {
@@ -53,7 +55,7 @@ const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
     };
 
     const handleExport = () => {
-        if (campaigns.length === 0) return alert('No history to export.');
+        if (campaigns.length === 0) return showAlert('No history to export.', 'Warning', 'warning');
 
         const dataStr = JSON.stringify(campaigns, (key, value) => {
             // Handle BigInt serialization if needed, though getCampaigns returns strings usually?
@@ -93,12 +95,12 @@ const CampaignHistory: React.FC<CampaignHistoryProps> = ({ onLoad }) => {
                     await saveCampaign(item);
                 }
 
-                alert(`Import successful! ${json.length} campaigns restored.`);
+                showAlert(`Import successful! ${json.length} campaigns restored.`, "Success", "success");
                 loadHistory();
 
             } catch (err: any) {
                 console.error(err);
-                alert('Error importing history: ' + err.message);
+                showAlert('Error importing history: ' + err.message, "Error", "error");
             } finally {
                 setImporting(false);
                 if (fileInputRef.current) fileInputRef.current.value = '';
